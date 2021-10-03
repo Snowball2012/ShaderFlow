@@ -28,6 +28,13 @@ USFOutput::USFOutput(const FObjectInitializer& ObjectInitializer)
 #endif
 }
 
+FString USFOutput::GetFunctionName() const
+{
+	if (!Description.IsEmpty())
+		return FString(TEXT("Get")) + Description;
+	return TEXT("GetSFOutput");
+}
+
 #if WITH_EDITOR
 int32 USFOutput::Compile(class FMaterialCompiler* Compiler, int32 OutputIndex)
 {
@@ -37,6 +44,14 @@ int32 USFOutput::Compile(class FMaterialCompiler* Compiler, int32 OutputIndex)
 	}
 	
 	return CompilerError(Compiler, TEXT("Input missing"));
+}
+
+void USFOutput::GetCaption(TArray<FString>& OutCaptions) const
+{
+	if (Description.IsEmpty())
+		OutCaptions.Add(FString(TEXT("SFOutput")));
+	else
+		OutCaptions.Add(Description);		
 }
 
 uint32 USFOutput::GetInputType(int32 InputIndex)
