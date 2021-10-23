@@ -30,9 +30,22 @@ USFOutput::USFOutput(const FObjectInitializer& ObjectInitializer)
 
 FString USFOutput::GetFunctionName() const
 {
-	if (!Description.IsEmpty())
-		return FString(TEXT("Get")) + Description;
-	return TEXT("GetSFOutput");
+	const FString Base = TEXT("GetSFOutput_");
+
+	const FString GuidStr = MaterialExpressionGuid.ToString(EGuidFormats::Base36Encoded);
+	
+	// Unique hash to differentiate between the same node called in different material functions
+	const uint32 FunctionHash = GetTypeHash(Function ? Function->GetFullName() : FString());
+	
+	// Theoretically we don't really need ObjHash because Guid should be enough.
+	// However, copy-pasting a node preserves its GUID, so it's better to add an extra hash
+	const uint32 ObjHash = GetTypeHash(GetFullName());
+	
+	const uint32 Hash = HashCombine(ObjHash, FunctionHash);
+
+	const FString HashStr = FString::FromHexBlob((uint8*)&Hash, sizeof(uint32));
+	
+	return Base	+ GuidStr + HashStr;
 }
 
 #if WITH_EDITOR
