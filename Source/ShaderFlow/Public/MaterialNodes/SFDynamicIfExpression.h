@@ -1,10 +1,11 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright(c) 2021 Sergey Kulikov
 
 #pragma once
 
 #include "CoreMinimal.h"
 #include "MaterialExpressionIO.h"
 #include "Materials/MaterialExpression.h"
+#include "Materials/MaterialExpressionCustom.h"
 #include "SFDynamicIfExpression.generated.h"
 
 class UMaterialExpressionCustom;
@@ -24,6 +25,9 @@ class SHADERFLOW_API USFDynamicIfExpression : public UMaterialExpression
 
 	UPROPERTY(meta = (RequiredInput = "true"))
 	FExpressionInput FalseExpr;
+
+	UPROPERTY(EditAnywhere, Category=SFOutput)
+	TEnumAsByte<ECustomMaterialOutputType> OutputType = CMOT_Float1;
 
 	// Forward declare functions from connected True/False pins
 	UPROPERTY()

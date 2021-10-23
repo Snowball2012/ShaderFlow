@@ -1,4 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
+﻿// Copyright(c) 2021 Sergey Kulikov
 
 #pragma once
 
@@ -23,8 +23,8 @@ class SHADERFLOW_API USFOutput : public UMaterialExpressionCustomOutput
 	virtual int32 GetNumOutputs() const override { return 1; }
 	virtual FString GetFunctionName() const override;
 	virtual FString GetDisplayName() const override { return TEXT("ShaderFlow Output"); }
-
-#if WITH_EDITOR
+	
+#if WITH_EDITOR	
 	virtual int32 Compile(class FMaterialCompiler* Compiler, int32 OutputIndex) override;
 	virtual bool AllowMultipleCustomOutputs() override { return true; }	
 	virtual void GetCaption(TArray<FString>& OutCaptions) const override;

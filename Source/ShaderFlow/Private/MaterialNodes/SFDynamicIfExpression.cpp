@@ -1,5 +1,4 @@
-﻿// Fill out your copyright notice in the Description page of Project Settings.
-
+﻿// Copyright(c) 2021 Sergey Kulikov
 
 #include "MaterialNodes/SFDynamicIfExpression.h"
 
@@ -52,9 +51,25 @@ int32 USFDynamicIfExpression::Compile(FMaterialCompiler* Compiler, int32 OutputI
 	const auto* FalseSFOutput = Cast<USFOutput>(FalseExpr.GetTracedInput().Expression);
 
 	const bool HasSFInputs = bool(TrueSFOutput) || bool(FalseSFOutput);
-
+	
 	if (HasSFInputs)
 	{
+		FString SFOutputTypeDecl = TEXT("FMaterialAttributes ");
+		switch (OutputType)
+		{
+		case CMOT_Float1:
+			SFOutputTypeDecl = TEXT("MaterialFloat ");
+			break;
+		case CMOT_Float2:
+			SFOutputTypeDecl = TEXT("MaterialFloat2 ");
+			break;
+		case CMOT_Float3:
+			SFOutputTypeDecl = TEXT("MaterialFloat3 ");
+			break;
+		case CMOT_Float4:
+			SFOutputTypeDecl = TEXT("MaterialFloat4 ");
+			break;
+		}
 		if (!ensure(ForwardDeclarationExpression))
 			return INDEX_NONE;
 
@@ -71,14 +86,14 @@ int32 USFDynamicIfExpression::Compile(FMaterialCompiler* Compiler, int32 OutputI
 		FwdCode.Append(TEXT("return Condition;\n}\n"));
 		if (TrueSFOutput)
 		{
-			FwdCode.Append(TEXT("MaterialFloat3 "));
+			FwdCode.Append(SFOutputTypeDecl);
 			FwdCode.Append(TrueSFOutput->GetFunctionName());
 			FwdCode.AppendInt(0);
 			FwdCode.Append(TEXT("(FMaterialPixelParameters Parameters); \n"));
 		}
 		if (FalseSFOutput)
 		{
-			FwdCode.Append(TEXT("MaterialFloat3 "));
+			FwdCode.Append(SFOutputTypeDecl);
 			FwdCode.Append(FalseSFOutput->GetFunctionName());
 			FwdCode.AppendInt(0);
 			FwdCode.Append(TEXT("(FMaterialPixelParameters Parameters); \n"));
@@ -91,8 +106,8 @@ int32 USFDynamicIfExpression::Compile(FMaterialCompiler* Compiler, int32 OutputI
 		return INDEX_NONE;
 
 	{
-		// @todo : find correct output type
-		BranchExpression->OutputType = CMOT_Float3;
+		BranchExpression->OutputType = OutputType;
+		
 		BranchExpression->Inputs.Empty();
 		auto& BranchExprConditionInput = BranchExpression->Inputs.AddDefaulted_GetRef();
 		BranchExprConditionInput.InputName = TEXT("Condition");
